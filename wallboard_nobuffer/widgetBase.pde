@@ -47,7 +47,7 @@ class DataWidget extends WidgetBase {
   
   void cacheData() {}
   
-  void draw(int _x, int _y)
+  void draw(int _x, int _y, int _alpha)
   {
     if ((tThread != null) && (!tThread.isAlive())) {
       println("DataWidget: Destroying finished interior thread. ("+tThread.getName()+")");
@@ -58,7 +58,7 @@ class DataWidget extends WidgetBase {
       lastDataTime = (System.currentTimeMillis() / 1000L);
     }
     
-    super.draw(_x, _y);
+    super.draw(_x, _y, _alpha);
   }
 
 }
