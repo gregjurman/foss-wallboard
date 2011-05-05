@@ -83,22 +83,24 @@ class GitHubApi extends RepoHost implements RepoHostAPI {
     user.userBuffer.smooth();
     user.userBuffer.image(user.userIcon, 10, 10);
     user.userBuffer.fill(255);
-    user.userBuffer.text(user.fullName, 90, 34);
+    user.userBuffer.text(((user.fullName == null) ? user.userName : user.fullName), 90, 34);
     user.userBuffer.textFont(subheaderFont);
-    user.userBuffer.text(user.userName, 95, 54);
+    user.userBuffer.text(((user.fullName == null) ? "" : user.userName), 95, 54);
     user.userBuffer.textFont(tinyFont);
     user.userBuffer.textAlign(CENTER);
-    user.userBuffer.text("public repos", _w-240, 82);
+    user.userBuffer.text("public repos", _w-380, 82);
     user.userBuffer.text("following", _w-100, 82);
+    user.userBuffer.text("followers", _w-240, 82);
     user.userBuffer.textFont(bigNumFont);
-    user.userBuffer.text(user.publicRepos, _w-240, 64);
+    user.userBuffer.text(user.publicRepos, _w-380, 64);
     user.userBuffer.text(user.following, _w-100, 64);
+    user.userBuffer.text(user.followers, _w-240, 64);
     user.userBuffer.image(this.repoIcon, 95, 62);
     user.userBuffer.endDraw();
   }
 }
 
-String gitHubUsers[] = { "decause", "jlew", "gregjurman", "ralphbean", "lmacken", "jeresig" };
+String[][] gitHubUsers = { {"decause", "jlew", "gregjurman", "ralphbean", "lmacken", "jeresig"}, {"mansam", "ryansb", "RyanWoods"}};
 
 class RepoWatcherThread extends Thread {
   Semaphore avail;
@@ -138,13 +140,26 @@ class RepoWatcherThread extends Thread {
 class RepoWatcherWidget extends DataWidget {
   Vector<RepoUser> users;
   Semaphore avail;
+  int screenNum = 0;
+  int totalScreens = 1;
   
   public RepoWatcherWidget(int _x, int _y, int _w, int _h)
   {
     super(_x, _y, _w, _h, 900);
     users = new Vector<RepoUser>();
-    for (String u: gitHubUsers) { users.add(new RepoUser(u));}
+    for (String u: gitHubUsers[0]) { users.add(new RepoUser(u));}
     avail = new Semaphore(1, true);
+    cacheData();
+  }
+  
+  public RepoWatcherWidget(int _x, int _y, int _w, int _h, int _screen, int _totalScreens)
+  {
+    super(_x, _y, _w, _h, 900);
+    users = new Vector<RepoUser>();
+    for (String u: gitHubUsers[_screen]) { users.add(new RepoUser(u));}
+    avail = new Semaphore(1, true);
+    screenNum = _screen;
+    totalScreens = _totalScreens;
     cacheData();
   }
   
@@ -160,11 +175,11 @@ class RepoWatcherWidget extends DataWidget {
   
   void drawImpl(int _alpha) 
   {
-    int ya = 12;
+    int ya = 24;
     fill(255, _alpha);
     textFont(titleFont);
     textAlign(LEFT);
-    text("State of the FOSS", 0, 0);
+    text("State of the FOSS ("+(screenNum+1)+"/"+totalScreens+")", 0, 0);
     for(RepoUser ru : users) 
     {
       if (ru.userBuffer != null)

@@ -84,6 +84,7 @@ class iCalTimeline extends DataWidget {
   
     fill(0,127*a);
     _roundRect(15, 15, this.width-50, this.height-62, 30);
+    
     //Background and title
     fill(255, 255*a);
     smooth();

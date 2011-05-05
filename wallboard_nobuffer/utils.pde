@@ -46,6 +46,11 @@ private String getDate() {
   return dateFormat.format(date);
 }
 
+private String getDate(Date _date) {
+  DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
+  return dateFormat.format(_date);
+}
+
 
 private Date getDateFromString(String _date)
 {

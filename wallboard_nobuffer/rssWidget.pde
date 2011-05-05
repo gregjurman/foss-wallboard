@@ -1,17 +1,12 @@
 class RssItem
 {
   String title, content;
-  long time;
-  public RssItem(String _title, String _content, long _time)
+  Date pubDate;
+  public RssItem(String _title, String _content, Date _pubDate)
   {
     title = _title;
     content = _content;
-    time = _time;
-  }
-  
-  boolean equals(long rhs)
-  {
-    return (this.time==rhs);
+    pubDate = _pubDate;
   }
 }
 
@@ -30,15 +25,16 @@ class RssWidgetThread extends Thread
   public void run()
   {
     println("RSSWidget: Getting \""+sourceUrl+"\"\n");
-    XMLElement rss = new XMLElement(null, sourceUrl);
+    XMLElement rss = new XMLElement(createReader(sourceUrl));
     XMLElement[] itemsXMLElements = rss.getChildren("channel/item");
     List<RssItem> _it = new Vector<RssItem>();
     
-    for (int i = 0; i < itemsXMLElements.length; i++)
+    for (int i = 0; i < (itemsXMLElements.length > 10 ? 10 : itemsXMLElements.length); i++)
     {
       String title = (itemsXMLElements[i].getChildren("title")[0]).getContent();
-      String body = ((itemsXMLElements[i].getChildren("description")[0]).getContent()).substring(0, 100);
-      long date = getDateFromString((itemsXMLElements[i].getChildren("pubDate")[0]).getContent()).getTime();
+      title = (title.length() >= 55 ? title.substring(0, 55).trim() : title) + "...";
+      String body = ((itemsXMLElements[i].getChildren("description")[0]).getContent()).substring(0, 100) + "...";
+      Date date = getDateFromString((itemsXMLElements[i].getChildren("pubDate")[0]).getContent());
       _it.add(new RssItem(title, body, date));
     }
     
@@ -63,12 +59,12 @@ class RssWidget extends DataWidget
   String sourceUrl, title;
   CopyOnWriteArrayList items;
   Semaphore sema;
-  public RssWidget(int _x, int _y, int _h, int _w, String _sourceUrl)
+  public RssWidget(int _x, int _y, int _w, int _h, String _sourceUrl)
   {
     super(_x, _y, _w, _h, 900);
     sema = new Semaphore(1, true);
     sourceUrl = _sourceUrl;
-    title = "RSS";
+    title = "RSS Feed";
     items = new CopyOnWriteArrayList();
     
     cacheData();
@@ -79,23 +75,44 @@ class RssWidget extends DataWidget
     if(tThread == null)
     {
       tThread = new RssWidgetThread(sourceUrl, items, sema);
-      tThread.setName("RssWidgetThread");
+      tThread.setName("RssWidgetThread - "+ title);
       tThread.start();
     }
   }
   
   void drawImpl(int _alpha) 
   {
-    int ya = 12;
+    int ya = 74;
+    textAlign(LEFT);
+    fill(0, 127*round((_alpha/255.0)));
+    _roundRect(15, 15, width-30, height-30, 30);
     
+    textFont(titleFont);
+    fill(255, _alpha);
+    text(title, 15, 45);
+    
+    textFont(subheaderFont);
     for(Object ri : items) 
     {
         try
         {
           sema.acquire();
-          tint(255, _alpha);
-          textFont(subheaderFont);
-          text(((RssItem)ri).title, 0, ya);
+          text(((RssItem)ri).title, 96, ya);
+          sema.release();
+        } 
+        catch (InterruptedException e) {}
+        
+        ya+=28;
+    }
+    
+    ya = 74;
+    textFont(smallFont);  
+    for(Object ri : items) 
+    {
+        try
+        {
+          sema.acquire();
+          text("("+getDate(((RssItem)ri).pubDate)+")", 24, ya-1);
           sema.release();
         } 
         catch (InterruptedException e) {}
