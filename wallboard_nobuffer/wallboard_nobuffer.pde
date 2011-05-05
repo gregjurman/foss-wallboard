@@ -24,11 +24,11 @@ void setup()
  smooth();
  frameRate(60);
  
- tl = new iCalTimelineClock(10, 10, screenWidth, 230, "http://foss.rit.edu/event/ical");
+ tl = new iCalTimelineClock(10, 30, screenWidth, 230, "http://foss.rit.edu/event/ical");
  tl.title = "FOSS@RIT Events";
  
  nepo = new Nepotism();
- rww = new RepoWatcherWidget(10, 260, screenWidth, screenHeight-100);
+ rww = new RepoWatcherWidget(10, 270, screenWidth, screenHeight-100);
  foLogo = new LogoWidget("fossLogo.png", screenWidth-400, screenHeight-400, 400, 400);
  iQR = new ImagineQR(10, screenHeight-720);
 }

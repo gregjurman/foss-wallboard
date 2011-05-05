@@ -46,6 +46,20 @@ private String getDate() {
   return dateFormat.format(date);
 }
 
+
+private Date getDateFromString(String _date)
+{
+  DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+  Date date = null;
+  try
+  {
+    date = df.parse(_date);
+  } catch (ParseException p) {}
+  
+  return date;
+}
+  
+
 private String getTime() {
   DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss a");
   Date date = new Date();
