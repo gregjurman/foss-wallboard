@@ -1,7 +1,7 @@
 import guru.ical4p.*;
 
 class iCalTimelineThread extends Thread {
-  CopyOnWriteArraySet events;
+  java.util.concurrent.CopyOnWriteArraySet events;
   Semaphore sema;
   ICal cal;
   String sourceUrl;
@@ -131,13 +131,14 @@ class iCalTimeline extends DataWidget {
            if ((long)(e.getStart().getTime()/1000) <= totalEndTime)
            {
              long xPos = (long)(((long)(e.getStart().getTime()/1000L) - rTime) * pixelPerSec);
+             xPos = (xPos<0) ? 0 : xPos;
              stroke(255, (((width-xPos) / (float)width) * 255)*a);
              line(50+xPos, tlCenter-6, 50+xPos, tlCenter+6);
              int eDay = getDayNum(e.getStart());
              if (lastDay != eDay) {
               textFont(smallFont, 14);
               textAlign(CENTER); 
-              text(eDay, xPos+50,tlCenter+22);
+              text(eDay, xPos+50, tlCenter+22);
               lastDay = eDay;
              }
              textAlign(LEFT);

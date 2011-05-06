@@ -1,3 +1,6 @@
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Semaphore;
 class RssItem
 {
   String title, content;
@@ -15,7 +18,7 @@ class RssWidgetThread extends Thread
   String sourceUrl;
   CopyOnWriteArrayList items;
   Semaphore sema;
-  public RssWidgetThread(String _sourceUrl, CopyOnWriteArrayList _items, Semaphore _sema)
+  public RssWidgetThread(String _sourceUrl,  CopyOnWriteArrayList _items, Semaphore _sema)
   {
     sourceUrl = _sourceUrl;
     items = _items;

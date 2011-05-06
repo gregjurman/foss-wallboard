@@ -59,7 +59,7 @@ private Date getDateFromString(String _date)
   try
   {
     date = df.parse(_date);
-  } catch (ParseException p) {}
+  } catch (java.text.ParseException p) {}
   
   return date;
 }

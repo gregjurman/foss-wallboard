@@ -109,5 +109,5 @@ void draw()
   textFont(headerFont);
   textAlign(CENTER, CENTER);
   fill(255);
-  text(round(frameRate), screenWidth/2, screenHeight-40);
+  text(round(frameRate), screenWidth/2, 100);
 }
