@@ -1,13 +1,14 @@
 import java.util.Vector;
 import java.util.Iterator;
+import org.json.*;
  
-class NepotismThread extends Thread implements QPidCallback
+class NepotistThread extends Thread implements QPidCallback
 {
   String sourceUrl;
   CopyOnWriteArrayList nepoSet;
   QPidClient _client;
   int mapWidth, mapHeight;
-  public NepotismThread(String _sourceUrl, CopyOnWriteArrayList _nepoSet, int mWidth, int mHeight)
+  public NepotistThread(String _sourceUrl, CopyOnWriteArrayList _nepoSet, int mWidth, int mHeight)
   {
     sourceUrl = _sourceUrl;
     nepoSet = _nepoSet;
@@ -21,38 +22,58 @@ class NepotismThread extends Thread implements QPidCallback
     try
     {
        while(true) {
-         this.sleep(500);
-         //nepoSet.add(new NepoPoint(random(mapWidth), random(mapHeight), round(random(50, 255))));
+         this.sleep(10000);
        }
     } catch(InterruptedException e) {}
   }
   
   void handleTextMessage(String message)
   {
-    nepoSet.add(new NepoPoint(random(mapWidth), random(mapHeight), round(random(50, 255))));
+    try
+    {
+      //println(message);
+      try {
+        JSONObject narcData = new JSONObject(message);
+        JSONArray latlong = narcData.getJSONArray("features").getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
+        float _lat = (float)latlong.getDouble(0);
+        float _long = (float)latlong.getDouble(1);
+        
+        println("Lat: " + _lat + "  Long: " + _long);
+        }
+        catch (JSONException e) {
+          println ("There was an error parsing the JSONObject.");
+        }
+//      
+////      Lat: -77.6376 Long: 43.089905
+////      Lat: 204.7248 Long: 187.64038
+////      Lat: -77.6376 Long: 43.089905
+////      Lat: 204.7248 Long: 187.64038
+//      
+//      float x = (mapWidth/2.0) + loc.longitude*(mapWidth/360.0);
+//      float y = log( tan(loc.latitude)+ (1.0/cos(loc.latitude)) )*(mapHeight/180.0);
+//      nepoSet.add(new NepoPoint(x, ((-1 * loc.latitude) + 90) * (mapHeight / 180), 255));
+    } catch (Exception e) {}
   }
 }
 
 
-class Nepotism extends WidgetBase {
+class Nepotist extends WidgetBase {
   PImage worldMap;
   float xMove;
   CopyOnWriteArrayList<NepoPoint> points;
   Semaphore sema;
   Thread tThread;
   
-  public Nepotism() {
+  public Nepotist() {
     super(0, 0, screenWidth, screenHeight);
     worldMap = loadImage("Worldmap-"+screenHeight+".tga");
     worldMap.loadPixels();
     xMove = 3000;
     this.points = new CopyOnWriteArrayList<NepoPoint>();
     sema = new Semaphore(1, true);
-    tThread = new NepotismThread("", this.points, worldMap.width, worldMap.height);
+    tThread = new NepotistThread("", this.points, worldMap.width, worldMap.height);
     tThread.start();
-//    for(int i=0; i<64; i++) {
-//      this.points.add(new NepoPoint(random(worldMap.width), random(worldMap.height), round(random(50, 255))));
-//    }
+    //points.add(new NepoPoint((worldMap.width/2.0) + (-77.6376)*(worldMap.width/360.0), GudermannianInv(43.089905), 255));
   }
   
   void finalize()
@@ -125,7 +146,7 @@ class NepoPoint {
     if (!finalized){
       x+=this.x;
       y+=this.y;
-      brightness-=1;
+      //brightness-=1;
       ellipseMode(CENTER);
       noStroke();
       fill(0, 255, 0, brightness);

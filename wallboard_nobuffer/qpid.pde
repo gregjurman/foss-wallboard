@@ -47,10 +47,8 @@ public class QPidClient implements MessageListener
     final String CONNECTION_JNDI_NAME = "local";
     final String CONNECTION_NAME = "amqp://guest:guest@clientid/?brokerlist='" + BROKER + "'";
 
-    final String QUEUE_JNDI_NAME = "message_queuefoobar";
-    final String QUEUE_NAME = "message_queuefoobar";
-    
-    final String TOPIC_NAME = "httpdlight_http_rawlogs";
+    final String QUEUE_JNDI_NAME = "nepotism_forwarder";
+    final String QUEUE_NAME = QUEUE_JNDI_NAME;
 
 
     private InitialContext _ctx;
@@ -102,7 +100,7 @@ public class QPidClient implements MessageListener
     public void onMessage(Message message)
     {
         String messageText;
-
+        
         JMSBytesMessage jmsMessage = (JMSBytesMessage) message;
         try
         {
@@ -120,7 +118,7 @@ public class QPidClient implements MessageListener
             //messageText = textMessage.getText();
             //println("messageText = " + messageText);
             //println("Correlation ID " + message.getJMSCorrelationID());
-            //jmsMessage.acknowledge();
+            jmsMessage.acknowledge();
         }
         catch (Exception e)
         {
@@ -165,7 +163,6 @@ public class QPidClient implements MessageListener
         properties.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
         properties.put("connectionfactory." + CONNECTION_JNDI_NAME, CONNECTION_NAME);
         properties.put("queue." + QUEUE_JNDI_NAME, QUEUE_NAME);
-        properties.put("topic." + QUEUE_JNDI_NAME, TOPIC_NAME);
 
         // Create the initial context
         Context ctx = null;

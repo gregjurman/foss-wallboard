@@ -1,12 +1,10 @@
-//import fullscreen.*;
-
 import processing.opengl.*;
 import javax.media.opengl.GL;
 
 List<ScreenSegment> screenSegs;
 
 RepoWatcherWidget rww;
-Nepotism nepo;
+Nepotist nepo;
 PGraphicsOpenGL pgl;
 GL gl;
 PGraphics csiLogo;
@@ -28,7 +26,7 @@ void setup()
   
   // Load fonts
   loadFonts();
-   
+  
   // Initialize Screen Segments
   screenSegs = new Vector<ScreenSegment>();
   ScreenSegment s0 = new ScreenSegment(0);
@@ -49,8 +47,8 @@ void setup()
   tl = new iCalTimelineClock(10, 10, screenWidth, 230, "http://foss.rit.edu/event/ical");
   tl.title = "FOSS@RIT Events";
    
-  // Start Nepotism
-  nepo = new Nepotism();
+  // Start Nepotist
+  nepo = new Nepotist();
   
   // Imagine RIT QR code Widget (Remove after Imagine RIT)
   iQR = new ImagineQR(10, screenHeight-720);
@@ -105,9 +103,9 @@ void draw()
   //hackADay.draw();
   
   // Framerate
-  fill(255);
-  textFont(headerFont);
-  textAlign(CENTER, CENTER);
-  fill(255);
-  text(round(frameRate), screenWidth/2, 100);
+  //fill(255);
+  //textFont(headerFont);
+  //textAlign(CENTER, CENTER);
+ // fill(255);
+  //text(round(frameRate), screenWidth/2, 100);
 }
