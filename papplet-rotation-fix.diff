@@ -1,0 +1,14 @@
+Index: PApplet.java
+===================================================================
+--- PApplet.java	(revision 7931)
++++ PApplet.java	(working copy)
+@@ -7420,7 +7420,7 @@
+         fullScreenRect = frame.getBounds();
+       } else {
+         DisplayMode mode = displayDevice.getDisplayMode();
+-        fullScreenRect = new Rectangle(0, 0, mode.getWidth(), mode.getHeight());
++        fullScreenRect = new Rectangle(0, 0, mode.getHeight(), mode.getWidth());
+         frame.setBounds(fullScreenRect);
+         frame.setVisible(true);
+       }
+
