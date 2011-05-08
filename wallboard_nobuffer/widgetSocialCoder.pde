@@ -100,7 +100,8 @@ class GitHubApi extends RepoHost implements RepoHostAPI {
   }
 }
 
-String[][] gitHubUsers = { {"decause", "jlew", "gregjurman", "ralphbean", "lmacken", "jeresig"}, {"mansam", "ryansb", "RyanWoods", "thequbit"}};
+String[][] gitHubUsers = { {"decause", "jlew", "gregjurman", "ralphbean", "lmacken", "jeresig"}, 
+                           {"mansam", "ryansb", "RyanWoods", "thequbit", "qalthos"}};
 
 class RepoWatcherThread extends Thread {
   Semaphore avail;

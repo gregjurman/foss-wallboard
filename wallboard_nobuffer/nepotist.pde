@@ -27,32 +27,31 @@ class NepotistThread extends Thread implements QPidCallback
     } catch(InterruptedException e) {}
   }
   
+  protected float lat2y(float lat)
+  {
+    return (180.0/PI) * log(tan((PI/4.0)+(lat*PI/360.0)));
+  }
+  
   void handleTextMessage(String message)
   {
-    try
-    {
-      //println(message);
-      try {
-        JSONObject narcData = new JSONObject(message);
-        JSONArray latlong = narcData.getJSONArray("features").getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
-        float _lat = (float)latlong.getDouble(0);
-        float _long = (float)latlong.getDouble(1);
-        
-        println("Lat: " + _lat + "  Long: " + _long);
-        }
-        catch (JSONException e) {
-          println ("There was an error parsing the JSONObject.");
-        }
-//      
-////      Lat: -77.6376 Long: 43.089905
-////      Lat: 204.7248 Long: 187.64038
-////      Lat: -77.6376 Long: 43.089905
-////      Lat: 204.7248 Long: 187.64038
-//      
-//      float x = (mapWidth/2.0) + loc.longitude*(mapWidth/360.0);
-//      float y = log( tan(loc.latitude)+ (1.0/cos(loc.latitude)) )*(mapHeight/180.0);
-//      nepoSet.add(new NepoPoint(x, ((-1 * loc.latitude) + 90) * (mapHeight / 180), 255));
-    } catch (Exception e) {}
+    println(message);
+    try {
+      JSONObject narcData = new JSONObject(message);
+      JSONArray latlong = narcData.getJSONArray("features").getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates");
+      //float _long = (float)latlong.getDouble(0);
+      //float _lat = (float)latlong.getDouble(1);
+      float _long = 0;
+      float _lat = 0;
+      float z = pow(2, 4); //Zoom is at 4
+      float x = ((_long + 180)/360.0) * z * 256;
+      float y =2048;
+      print ("("+x+","+y+")");
+      if (nepoSet.size() < 100) nepoSet.add(new NepoPoint(x, y, 255));
+    }
+    catch (JSONException e) {
+      println ("There was an error parsing the JSONObject.");
+    }
+    catch (Exception e) {}
   }
 }
 
@@ -68,11 +67,22 @@ class Nepotist extends WidgetBase {
     super(0, 0, screenWidth, screenHeight);
     worldMap = loadImage("Worldmap-"+screenHeight+".tga");
     worldMap.loadPixels();
-    xMove = 3000;
+    xMove = 0;
     this.points = new CopyOnWriteArrayList<NepoPoint>();
     sema = new Semaphore(1, true);
     tThread = new NepotistThread("", this.points, worldMap.width, worldMap.height);
-    tThread.start();
+    //tThread.start();
+    
+      float _long = -77.67;
+      float _lat = 42.5;
+      float z = 16; //Zoom is 4
+      //256) * (worldMap.width/4096.0)
+      float x = ((_long + 180)/360.0) * z;
+      float y = ( 1 - ( log( tan(_lat) + (1.0/cos(_lat)) ) / PI) ) / 2.0 * z;
+      x*=(256 * (800/4096.0));
+      y*=(256 * (800/4096.0));
+      print ("("+x+","+y+")");
+      if (points.size() < 100) points.add(new NepoPoint(x, y, 255));
     //points.add(new NepoPoint((worldMap.width/2.0) + (-77.6376)*(worldMap.width/360.0), GudermannianInv(43.089905), 255));
   }
   
@@ -104,23 +114,23 @@ class Nepotist extends WidgetBase {
     // Get a lock
     try
     {
-    sema.acquire();
+    //sema.acquire();
     Iterator itr = points.iterator();
     List<NepoPoint> delSet = new Vector<NepoPoint>();
     while(itr.hasNext()) {
       NepoPoint item = (NepoPoint)itr.next();
-      item.draw(-(xMove), 0);
+      //item.draw(0, 0);
       if (item.finalized) {delSet.add(item);}
       if (xMove > worldMap.width-screenWidth) {
         item.draw(worldMap.width-xMove, 0);
       }
     }
-
+    //sema.acquire();
     points.removeAll(delSet);
-    sema.release();
+    //sema.release();
     delSet.clear();
     delSet = null;
-    } catch (InterruptedException e) {}
+    } catch (Exception e) {}
   }
 }
 
@@ -146,11 +156,11 @@ class NepoPoint {
     if (!finalized){
       x+=this.x;
       y+=this.y;
-      //brightness-=1;
+      //brightness-=5;
       ellipseMode(CENTER);
       noStroke();
       fill(0, 255, 0, brightness);
-      ellipse(x, y, 15, 15);
+      ellipse(x, y, 5, 5);
       if (brightness <= 0) {finalized = true;}
     } 
   }  

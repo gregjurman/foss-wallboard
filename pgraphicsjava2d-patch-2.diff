@@ -1,0 +1,51 @@
+Index: PGraphicsJava2D.java
+===================================================================
+--- PGraphicsJava2D.java	(revision 7940)
++++ PGraphicsJava2D.java	(working copy)
+@@ -813,14 +813,24 @@
+     // Image not ready yet, or an error
+     if (who.width <= 0 || who.height <= 0) return;
+ 
+-    if (who.getCache(this) == null) {
++    if ((primarySurface) && who.getCache(this) == null) {
+       //System.out.println("making new image cache");
+       who.setCache(this, new ImageCache(who));
+       who.updatePixels();  // mark the whole thing for update
+       who.modified = true;
+     }
+ 
+-    ImageCache cash = (ImageCache) who.getCache(this);
++    ImageCache cash;
++    if (primarySurface) {
++      // We are rendering on the primary sketch surface, its OK to use cache
++      cash = (ImageCache) who.getCache(this);
++    }
++    else {
++      // This maybe a temporary buffer, don't use cache as this may get 
++      // destroyed later and clog the PImage cache up.
++      cash = new ImageCache(who);
++    }
++
+     // if image previously was tinted, or the color changed
+     // or the image was tinted, and tint is now disabled
+     if ((tint && !cash.tinted) ||
+@@ -834,8 +844,10 @@
+       cash.update(tint, tintColor);
+       who.modified = false;
+     }
+-
+-    g2.drawImage(((ImageCache) who.getCache(this)).image,
++    
++    // Conditionals are messy but this shouldn't turn a lot of heads.
++    g2.drawImage(
++      (primarySurface) ? ((ImageCache) who.getCache(this)).image : cash.image,
+                  (int) x1, (int) y1, (int) x2, (int) y2,
+                  u1, v1, u2, v2, null);
+   }
+@@ -1889,4 +1901,4 @@
+ //    loadPixels();
+ //    super.save(filename);
+ //  }
+-}
+\ No newline at end of file
++}

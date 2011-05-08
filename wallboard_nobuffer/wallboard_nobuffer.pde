@@ -78,7 +78,6 @@ void draw()
 {
   // Render Nepotism in background
   nepo.draw();
-  
   // FOSSBox and CSI Logo
   foLogo.draw();
   image(csiLogo, 0, screenHeight-200);
@@ -98,9 +97,6 @@ void draw()
     sIter++;
     if (sIter >= screenSegs.size()) sIter=0;
   }
-  
-  // Hack-a-day RSS Feed
-  //hackADay.draw();
   
   // Framerate
   //fill(255);
